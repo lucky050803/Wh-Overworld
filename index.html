@@ -1,85 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wh-OverWorld</title>
-
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 50px; }
-    .container { width: 400px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-    input, select, button { width: 100%; padding: 10px; margin: 10px 0; }
-    button { background-color: #4CAF50; color: white; cursor: pointer; }
-    .result { margin-top: 20px; }
-    .video-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Management App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
         }
-        
-  </style>
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        form, .card-details {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+    </style>
 </head>
-<body class="bg-white text-black relative">
-    <video class="video-bg" src="215049_tiny.mp4" autoplay loop muted></video>
-
+<body>
+    <h1>Card Management App</h1>
     
+    <!-- Form to add a new card -->
+    <form id="card-form">
+        <h2>Add New Card</h2>
+        <label for="name">Card Name:</label>
+        <input type="text" id="name" required>
+        
+        <label for="serial_number">Serial Number:</label>
+        <input type="text" id="serial_number" required>
+        
+        <label for="card_type">Card Type:</label>
+        <select id="card_type" required>
+            <option value="Type1">Type1</option>
+            <option value="Type2">Type2</option>
+            <option value="Type3">Type3</option>
+        </select>
+        
+        <button type="submit">Add Card</button>
+    </form>
 
-<main class="content py-10 text-center relative z-10">
-<div class="container">
-    <h2 class="text-4xl text-white">Wh-OverWorld</h2>
-    <h2 class="text-4xl text-white"> _______________ </h2>
-  <h1 class="text-4xl text-white">Ajouter ou Rechercher une Carte</h1>
-  <form id="card-form" method="POST">
-    <input type="text" id="name" name="name" placeholder="Nom de la carte" required>
-    <input type="text" id="serial_number" name="serial_number" placeholder="Numéro de série" required>
-    <label for="card_type">Type de carte :</label>
-    <select id="card_type" name="card_type">
-      <option value="Type1">Type1</option>
-      <option value="Type2">Type2</option>
-      <option value="Type3">Type3</option>
-    </select>
-    <button type="submit">Ajouter la carte</button>
-  </form>
+    <!-- Form to search for a card -->
+    <form id="search-form">
+        <h2>Search Card</h2>
+        <label for="search_term">Name or Serial Number:</label>
+        <input type="text" id="search_term" required>
+        
+        <button type="submit">Search</button>
+    </form>
 
-  <h2>Rechercher une Carte</h2>
-  <form id="search-form" method="GET">
-    <input type="text" id="search_term" name="search_term" placeholder="Nom ou numéro de série">
-    <button type="submit">Rechercher</button>
-  </form>
+    <!-- Display result here -->
+    <div class="card-details" id="card-details"></div>
 
-  <div id="result" class="result"></div>
-</div>
+    <script>
+        // Function to add a card to LocalStorage
+        document.getElementById("card-form").onsubmit = function(event) {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            const serialNumber = document.getElementById("serial_number").value;
+            const cardType = document.getElementById("card_type").value;
+            
+            // Create a card object
+            const card = { name, serialNumber, cardType };
+            
+            // Save card to LocalStorage
+            let cards = JSON.parse(localStorage.getItem("cards")) || [];
+            cards.push(card);
+            localStorage.setItem("cards", JSON.stringify(cards));
+            
+            document.getElementById("card-details").textContent = "Card added successfully!";
+            document.getElementById("card-form").reset();
+        };
 
-<script>
-  document.getElementById("card-form").onsubmit = async function (event) {
-    event.preventDefault();
-    const name = document.getElementById("name").value;
-    const serial_number = document.getElementById("serial_number").value;
-    const card_type = document.getElementById("card_type").value;
-
-    const response = await fetch("/add_card", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, serial_number, card_type })
-    });
-    const result = await response.json();
-    document.getElementById("result").textContent = result.message;
-  };
-
-  document.getElementById("search-form").onsubmit = async function (event) {
-    event.preventDefault();
-    const search_term = document.getElementById("search_term").value;
-
-    const response = await fetch(`/search_card?search_term=${search_term}`);
-    const result = await response.json();
-    document.getElementById("result").textContent = result.message || JSON.stringify(result.card);
-  };
-</script>
-</main>
+        // Function to search for a card in LocalStorage
+        document.getElementById("search-form").onsubmit = function(event) {
+            event.preventDefault();
+            const searchTerm = document.getElementById("search_term").value.toLowerCase();
+            const cards = JSON.parse(localStorage.getItem("cards")) || [];
+            
+            // Find the card that matches the name or serial number
+            const foundCard = cards.find(card => 
+                card.name.toLowerCase() === searchTerm || card.serialNumber === searchTerm
+            );
+            
+            const resultDiv = document.getElementById("card-details");
+            if (foundCard) {
+                resultDiv.innerHTML = `
+                    <h3>Card Details</h3>
+                    <p><strong>Name:</strong> ${foundCard.name}</p>
+                    <p><strong>Serial Number:</strong> ${foundCard.serialNumber}</p>
+                    <p><strong>Type:</strong> ${foundCard.cardType}</p>
+                `;
+            } else {
+                resultDiv.textContent = "No card found with that name or serial number.";
+            }
+            document.getElementById("search-form").reset();
+        };
+    </script>
 </body>
 </html>
