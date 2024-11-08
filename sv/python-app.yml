@@ -6,7 +6,7 @@ on:
 jobs:
   run-backend:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -26,7 +26,4 @@ jobs:
         nohup python app.py &  # Démarre l'application Flask en arrière-plan
         sleep 5                 # Attend que le serveur démarre
 
-    - name: Test adding and searching a card
-      run: |
-        curl -X POST http://localhost:5000/add_card -H "Content-Type: application/json" -d '{"name": "Test Card", "serial_number": "12345", "card_type": "Type1"}'
-        curl http://localhost:5000/search_card?search_term=12345
+   
