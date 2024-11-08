@@ -23,7 +23,7 @@ jobs:
 
     - name: Start backend server
       run: |
-        nohup python app.py &  # Démarre l'application Flask en arrière-plan
+        pip python app.py &  # Démarre l'application Flask en arrière-plan
         sleep 5                 # Attend que le serveur démarre
 
    
