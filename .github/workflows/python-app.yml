@@ -1,0 +1,32 @@
+name: Python Web App
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flask
+
+    - name: Start application
+      run: |
+        python app.py &
+        sleep 5
+        curl -X POST http://localhost:5000/add_card -H "Content-Type: application/json" -d '{"name": "Test Card", "serial_number": "12345", "card_type": "Type1"}'
+        curl http://localhost:5000/search_card?search_term=12345

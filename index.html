@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wh-OverWorld</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding: 50px; }
+    .container { width: 400px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+    input, select, button { width: 100%; padding: 10px; margin: 10px 0; }
+    button { background-color: #4CAF50; color: white; cursor: pointer; }
+    .result { margin-top: 20px; }
+    .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        
+  </style>
+</head>
+<body class="bg-white text-black relative">
+    <video class="video-bg" src="215049_tiny.mp4" autoplay loop muted></video>
+
+    
+
+<main class="content py-10 text-center relative z-10">
+<div class="container">
+    <h2 class="text-4xl text-white">Wh-OverWorld</h2>
+    <h2 class="text-4xl text-white"> _______________ </h2>
+  <h1 class="text-4xl text-white">Ajouter ou Rechercher une Carte</h1>
+  <form id="card-form" method="POST">
+    <input type="text" id="name" name="name" placeholder="Nom de la carte" required>
+    <input type="text" id="serial_number" name="serial_number" placeholder="Numéro de série" required>
+    <label for="card_type">Type de carte :</label>
+    <select id="card_type" name="card_type">
+      <option value="Type1">Type1</option>
+      <option value="Type2">Type2</option>
+      <option value="Type3">Type3</option>
+    </select>
+    <button type="submit">Ajouter la carte</button>
+  </form>
+
+  <h2>Rechercher une Carte</h2>
+  <form id="search-form" method="GET">
+    <input type="text" id="search_term" name="search_term" placeholder="Nom ou numéro de série">
+    <button type="submit">Rechercher</button>
+  </form>
+
+  <div id="result" class="result"></div>
+</div>
+
+<script>
+  document.getElementById("card-form").onsubmit = async function (event) {
+    event.preventDefault();
+    const name = document.getElementById("name").value;
+    const serial_number = document.getElementById("serial_number").value;
+    const card_type = document.getElementById("card_type").value;
+
+    const response = await fetch("/add_card", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, serial_number, card_type })
+    });
+    const result = await response.json();
+    document.getElementById("result").textContent = result.message;
+  };
+
+  document.getElementById("search-form").onsubmit = async function (event) {
+    event.preventDefault();
+    const search_term = document.getElementById("search_term").value;
+
+    const response = await fetch(`/search_card?search_term=${search_term}`);
+    const result = await response.json();
+    document.getElementById("result").textContent = result.message || JSON.stringify(result.card);
+  };
+</script>
+</main>
+</body>
+</html>
