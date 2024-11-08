@@ -1,13 +1,10 @@
-name: Python Web App
+name: Python Web Backend
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:  
 
 jobs:
-  build:
+  run-backend:
 
     runs-on: ubuntu-latest
 
@@ -24,9 +21,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install flask
 
-    - name: Start application
+    - name: Start backend server
       run: |
-        python app.py &
-        sleep 5
+        nohup python app.py &  # Démarre l'application Flask en arrière-plan
+        sleep 5                 # Attend que le serveur démarre
+
+    - name: Test adding and searching a card
+      run: |
         curl -X POST http://localhost:5000/add_card -H "Content-Type: application/json" -d '{"name": "Test Card", "serial_number": "12345", "card_type": "Type1"}'
         curl http://localhost:5000/search_card?search_term=12345
